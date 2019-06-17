@@ -53,4 +53,15 @@ case $PLATFORMLIBDIR in
 /lib|/usr/lib)	SVMLLP=/lib:/usr/lib;;
 *)				SVMLLP="$PLATFORMLIBDIR:/lib:/usr$PLATFORMLIBDIR:/usr/lib"
 esac
-LD_LIBRARY_PATH="$PLUGINS:$SVMLLP:${LD_LIBRARY_PATH}" exec $GDB "$BIN/squeak" "$@"
+
+# If no image file is provided as a command-line argument, allow the user to 
+# select the image file via a file-chooser dialog
+if which zenity &>/dev/null && [ $# -eq 0 ]; then
+  IMAGE=$(zenity --title 'Select an image' --file-selection --filename "${RESOURCES}/" --file-filter '*.image' --file-filter '*')
+else
+  IMAGE=$@
+fi
+
+echo "Using image: ${IMAGE}"
+
+LD_LIBRARY_PATH="$PLUGINS:$SVMLLP:${LD_LIBRARY_PATH}" exec $GDB "$BIN/squeak" "${IMAGE}"
