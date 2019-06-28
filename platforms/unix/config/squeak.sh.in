@@ -56,12 +56,10 @@ esac
 
 # If no image file is provided as a command-line argument, allow the user to 
 # select the image file via a file-chooser dialog
-if which zenity &>/dev/null && [ $# -eq 0 ]; then
-  IMAGE=$(zenity --title 'Select an image' --file-selection --filename "${RESOURCES}/" --file-filter '*.image' --file-filter '*')
+if [ $# -eq 0 && which zenity &>/dev/null ]; then
+  VM_ARGS=$(zenity --title 'Select an image' --file-selection --file-filter '*.image' --file-filter '*')
 else
-  IMAGE=$@
+  VM_ARGS=$@
 fi
 
-echo "Using image: ${IMAGE}"
-
-LD_LIBRARY_PATH="$PLUGINS:$SVMLLP:${LD_LIBRARY_PATH}" exec $GDB "$BIN/squeak" "${IMAGE}"
+LD_LIBRARY_PATH="$PLUGINS:$SVMLLP:${LD_LIBRARY_PATH}" exec $GDB "$BIN/squeak" "${VM_ARGS}"
